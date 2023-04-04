@@ -3,8 +3,6 @@ import { Image, StyleSheet, Text, View,  TextInput, SafeAreaView, TouchableOpaci
 import {LinearGradient} from 'expo-linear-gradient';
 import {useNavigation} from '@react-navigation/native';
 
-
-
 export default function Login() {
   const navigation = useNavigation();
   return (
