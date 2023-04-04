@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@react-navigation/bottom-tabs": "^6.5.7",
+    "@react-navigation/drawer": "^6.6.2",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/native-stack": "^6.9.12",
     "@rneui/base": "^0.0.0-edge.2",
@@ -20,7 +21,9 @@
     "react": "18.2.0",
     "react-native": "0.71.4",
     "react-native-gesture-handler": "^2.9.0",
-    "react-native-linear-gradient": "^2.6.2"
+    "react-native-linear-gradient": "^2.6.2",
+    "react-native-material-menu": "^2.0.0",
+    "react-native-table-component": "^1.2.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
