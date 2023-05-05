@@ -91,12 +91,13 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: 'gray',
+    borderColor: 'white',
     padding: 15,
     marginVertical: 10,
     borderRadius: 5,
     height: 55,
     paddingVertical: 0,
+    backgroundColor: 'white',
   },
   // Login Btn Styles
   loginBtnWrapper: {
