@@ -3,10 +3,18 @@ import { useState, useEffect, useRef } from 'react';
 import { useInterval } from './dashboard';
 import { StatusBar } from 'expo-status-bar';
 import { Image, StyleSheet, Text, View, SafeAreaView, TouchableOpacity} from 'react-native';
-import { Ionicons, Fontisto } from '@expo/vector-icons';
+import { Ionicons, Fontisto, AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
+import { Dropdown } from 'react-native-element-dropdown';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import {useNavigation} from '@react-navigation/native';
+
 const Stack = createNativeStackNavigator();
+const data = [
+  { label: 'Mango Tree', value: '1' },
+  { label: 'Sunflower', value: '2' },
+  { label: 'Guava Tree', value: '3' },
+];
 
 function TemperatureValue(){
   const [temp, setTemp] = useState(0);
@@ -67,30 +75,86 @@ function LightValue(){
 }
 
 export default function Homescreen() {
+  const navigation = useNavigation();
+  const [value, setValue] = useState(null);
+  const [isFocus, setIsFocus] = useState(false);
+  const [currentDate, setCurrentDate] = useState('');
+  useEffect(() => {
+    var date = new Date().getDate(); //Current Date
+    var month = new Date().getMonth() + 1; //Current Month
+    var year = new Date().getFullYear(); //Current Year
+    var hours = new Date().getHours(); //Current Hours
+    var min = new Date().getMinutes(); //Current Minutes
+    var sec = new Date().getSeconds(); //Current Seconds
+    setCurrentDate(
+      date + '/' + month + '/' + year 
+      + ' ' + hours + ':' + min + ':' + sec
+    );
+  }, []);
+  const [index, setIndex] = useState(1);
+  const iconSmile = () => {
+    return (
+      <View>
+        <AntDesign name="smile-circle" size={90} color="#b2df00" style={[styles.icon, {padding: 7}]}/>
+      </View>
+    );
+  }
+  const iconNeutral = () => {
+    return (
+      <View>
+        <MaterialCommunityIcons name="emoticon-neutral" size={100} color="#b2df00" style={styles.icon} />
+      </View>
+    );
+  }
+  const iconSad = () => {
+    return (
+      <View>
+        <Ionicons name="sad" size={100} color="red" style={styles.icon}/>
+      </View>
+    );
+  }
+  // const renderIcon = () => {}
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.summary}>
-        <View style={[{justifyContent: 'center', alignItems: 'center', marginTop: 20}]}>
-          <Fontisto name="neutral" size={100} color="#000" style={[{backgroundColor: '#ffcf1a', borderRadius: 50}]}/></View>
+        <View style={[{justifyContent: 'center', alignItems: 'center', marginTop: 5}]}>
+          {index == 1? iconSmile(): index == 2? iconNeutral(): iconSad()}
+        </View>
           {/* emoji-happy, emoji-sad */}
-        <View style={{marginTop:20, marginLeft:50}}>
+        <View style={{marginTop:25, marginLeft:50}}>
           <View style={styles.row}>
             <View style={styles.column}>
+                <Text style={{fontWeight: 'bold', marginBottom: 25, fontSize:17}}>Date: </Text>
                 <Text style={{fontWeight: 'bold', marginBottom: 10, fontSize:17}}>Tree: </Text>
-                <Text style={{fontWeight: 'bold', marginBottom: 10, fontSize:17}}>Date: </Text>
-                <Text style={{fontWeight: 'bold', marginBottom: 10, fontSize:17}}>Time: </Text>
             </View>
             <View style={[styles.column, {marginLeft: 15}]}>
-                <Text style={{marginBottom: 10, fontSize:17}}>Mango </Text>
-                <Text style={{marginBottom: 10, fontSize:17}}>30/03/2023 </Text>
-                <Text style={{marginBottom: 10, fontSize:17}}>11:20 </Text>
+                <Text style={{marginBottom:15, fontSize:17}}>{currentDate}</Text>
+                <Dropdown
+                  style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+                  placeholderStyle={styles.d_placeholderStyle}
+                  selectedTextStyle={styles.d_selectedTextStyle}
+                  inputSearchStyle={styles.d_inputSearchStyle}
+                  data={data}
+                  maxHeight={200}
+                  labelField="label"
+                  valueField="value"
+                  placeholder={data[0].label}
+                  searchPlaceholder="Search..."
+                  value={value}
+                  onFocus={() => setIsFocus(true)}
+                  onBlur={() => setIsFocus(false)}
+                  onChange={item => {
+                    setValue(item.value);
+                    setIsFocus(false);
+                  }}
+                />
             </View>
           </View>
         </View>
       </View>
         
       <View
-        style={[{flexDirection: 'column', padding: 50}]}>
+        style={[{flexDirection: 'column', padding: 50, paddingTop:40}]}>
         <View style={styles.item}>
           <View style={styles.row}>
             <Image source={{uri:'https://cdn-icons-png.flaticon.com/512/1684/1684375.png'}} style={styles.cardicon}/>
@@ -100,7 +164,7 @@ export default function Homescreen() {
               <TemperatureValue></TemperatureValue>
             </View>
             <View style={styles.columnLeft}>
-              <TouchableOpacity style={styles.settingIcon}>
+              <TouchableOpacity style={styles.settingIcon} onPress={() => navigation.navigate('Temperature Settings')} >
                 <Ionicons name="settings" size={23} color="#BBBBBB" />
               </TouchableOpacity>
               <Text style={styles.cardtext}>11:18 30/03/2023</Text>
@@ -116,10 +180,10 @@ export default function Homescreen() {
               <HumidityValue></HumidityValue>
             </View>
             <View style={styles.columnLeft}>
-              <TouchableOpacity style={styles.settingIcon}>
+              <TouchableOpacity style={styles.settingIcon} onPress={() => navigation.navigate('Humidity Settings')} >
                 <Ionicons name="settings" size={23} color="#BBBBBB" />
               </TouchableOpacity>
-              <Text style={[styles.cardtext, {color: '#2c94fa', marginLeft:'auto', fontWeight: 'bold'}]}>above 30 ml/m³</Text>
+              <Text style={[styles.cardtext, {color: '#2c94fa', marginLeft:'auto', fontWeight: 'bold'}]}>above 30%</Text>
               <Text style={styles.cardtext}>11:20 30/03/2023</Text>
             </View>
           </View>
@@ -128,12 +192,12 @@ export default function Homescreen() {
           <View style={styles.row}>
             <Image source={{uri:'https://cdn-icons-png.flaticon.com/512/427/427735.png'}} style={styles.cardicon}/>
             <View style={styles.column}>
-              <Text style={styles.cardtitle}>Lighting</Text>
+              <Text style={styles.cardtitle}>Brightness</Text>
               {/* <Text style={styles.cardinfo}>170 <Text style={styles.unit}>W/m²</Text></Text> */}
               <LightValue></LightValue>
             </View>
             <View style={styles.columnLeft}>
-              <TouchableOpacity style={styles.settingIcon}>
+              <TouchableOpacity style={styles.settingIcon} onPress={() => navigation.navigate('Brightness Settings')} >
                 <Ionicons name="settings" size={23} color="#BBBBBB" />
               </TouchableOpacity>
               <Text style={styles.cardtext}>11:19 30/03/2023</Text>
@@ -151,9 +215,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#e6eee7',
   },
   summary: {
-    // backgroundColor: '#fff',
+    backgroundColor: 'white',
     height: 240,
+    borderBottomEndRadius: 35,
+    borderBottomStartRadius: 35,
   },
+  icon: {backgroundColor: 'black', borderRadius: 50},
   info: {
     fontWeight: 'bold', 
     marginBottom: 10,
@@ -209,5 +276,22 @@ const styles = StyleSheet.create({
   settingIcon: {
     marginLeft: 'auto',
     // marginTop: 20,
-  }
-});
+  dropdown: {
+    height: 45,
+    fontSize: 17,
+    borderColor: 'gray',
+    borderWidth: 0.5,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    backgroundColor:'white',
+  },
+  d_icon: {
+    marginRight: 5,
+  },
+  d_placeholderStyle: {
+    fontSize: 16,
+  },
+  d_selectedTextStyle: {
+    fontSize: 16,
+  },
+}});
