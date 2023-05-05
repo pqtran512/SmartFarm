@@ -72,7 +72,7 @@ export default function BottomTabNavigator() {
     tabBarInactiveTintColor: 'gray',
   })}>
         <Tab.Screen name="Home" component={Homescreen} options={{
-            headerStyle: {backgroundColor: '#e6eee7', height: 90,}, 
+            headerStyle: {backgroundColor: 'white', height: 90,}, /* #e6eee7 */
             headerTitle: (props) => <LogoTitle {...props}/>,
             headerTintColor: '#000',}}/>
         {/* <Tab.Screen name="Fruit Classification" component={FruitClassification} /> */}
