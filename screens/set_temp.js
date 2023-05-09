@@ -1,73 +1,69 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableWithoutFeedback, Keyboard} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TextInput} from 'react-native';
 import { Octicons, Ionicons  } from '@expo/vector-icons';
 
 export default function TempSet() {
-  const [min, onChangeMin] = useState('');
-  const [sec, onChangeSec] = useState('');
-  const [minTemp, onChangeMinTemp] = useState('');
-  const [maxTemp, onChangeMaxTemp] = useState('');
+  const [interval_min, onChangeMin] = useState('');
+  const [interval_sec, onChangeSec] = useState('');
+  const [lower, onChangeMinTemp] = useState('');
+  const [upper, onChangeMaxTemp] = useState('');
 
     return (
-      
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View style={styles.main}>
-          <Text style={[styles.title, {marginTop: 16}]}>Automatic mode setting</Text>
-          <View style={styles.row}>
-            <Octicons name="stopwatch" size={24} color="gray" />
-            <Text>   Polling interval</Text>
-            
-            <View style={styles.info}>
-              
-              <TextInput
+      <View style={styles.main}>
+        <Text style={[styles.title, {marginTop: 16}]}>Automatic mode setting</Text>
+        <View style={styles.row}>
+          <Octicons name="stopwatch" size={24} color="gray" />
+          <Text>   Polling interval</Text>
+          <View style={styles.info}>
+            <TextInput
+              style={styles.input}
+              onChangeText={onChangeMin}
+              value={interval_min}
+              placeholder="00"
+              keyboardType="numeric"
+            />
+            <Text style={styles.unit}>min</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={onChangeSec}
+              value={interval_sec}
+              placeholder="00"
+              keyboardType="numeric"
+            />
+            <Text style={styles.unit}>sec</Text>
+          </View>
+          
+        </View>
+        <Text  style={styles.title}>Safety fallback mode</Text>
+        <View style={styles.row}>
+          <Ionicons name="warning-outline" size={20} color="black" />
+          <Text>  Lower temperature limit</Text>
+          <View style={styles.info}>
+            <TextInput
                 style={styles.input}
-                onChangeText={onChangeMin}
-                value={min}
-                placeholder="00"
+                onChangeText={onChangeMinTemp}
+                value={lower}
+                placeholder="15"
                 keyboardType="numeric"
               />
-              <Text style={styles.unit}>min</Text>
-              <TextInput
-                style={styles.input}
-                onChangeText={onChangeSec}
-                value={sec}
-                placeholder="00"
-                keyboardType="numeric"
-              />
-              <Text style={styles.unit}>sec</Text>
-            </View>
-          </View>
-          <Text  style={styles.title}>Safety fallback mode</Text>
-          <View style={styles.row}>
-            <Ionicons name="warning-outline" size={20} color="black" />
-            <Text>  Lower temperature limit</Text>
-            <View style={styles.info}>
-              <TextInput
-                  style={styles.input}
-                  onChangeText={onChangeMinTemp}
-                  value={minTemp}
-                  placeholder="15"
-                  keyboardType="numeric"
-                />
-              <Text style={{fontSize: 16, color:'gray'}}> °C</Text>
-            </View>
-          </View>
-          <View style={styles.row}>
-            <Ionicons name="warning-outline" size={20} color="black" />
-            <Text>  Upper temperature limit</Text>
-            <View style={styles.info}>
-              <TextInput
-                  style={styles.input}
-                  onChangeText={onChangeMaxTemp}
-                  value={maxTemp}
-                  placeholder="40"
-                  keyboardType="numeric"
-                />
-              <Text style={{fontSize: 16, color:'gray'}}> °C</Text>
-            </View>
+            <Text style={{fontSize: 16, color:'gray'}}> °C</Text>
           </View>
         </View>
-      </TouchableWithoutFeedback>
+        <View style={styles.row}>
+          <Ionicons name="warning-outline" size={20} color="black" />
+          <Text>  Upper temperature limit</Text>
+          <View style={styles.info}>
+            <TextInput
+                style={styles.input}
+                onChangeText={onChangeMaxTemp}
+                value={upper}
+                placeholder="40"
+                keyboardType="numeric"
+              />
+            <Text style={{fontSize: 16, color:'gray'}}> °C</Text>
+          </View>
+        </View>
+      </View>
     );
   }
 

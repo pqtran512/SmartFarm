@@ -3,8 +3,34 @@ import { Image, StyleSheet, Text, View,  TextInput, SafeAreaView, TouchableOpaci
 import {LinearGradient} from 'expo-linear-gradient';
 import {useNavigation} from '@react-navigation/native';
 
+function checkAuthentication(username, password, navigation) {
+  console.log(username)
+  console.log(password)
+
+  const [data, setdata] = React.useState({
+    usename: '',
+    password: ''
+  })
+
+  React.useEffect(() => {
+    fetch(`http://127.0.0.1:5000/get-user/${username}/${password}`, {
+      method: 'GET'
+    }) 
+    .then(response => response.json())
+    .then(user => {
+      setdata(user)
+    })
+  }, [])
+
+  console.log(data)
+  navigation.navigate('Homescreen')
+}
+
 export default function Login() {
   const navigation = useNavigation();
+  const [username, onChangeUser] = React.useState('');
+  const [password, onChangePass] = React.useState('');
+
   return (
     <SafeAreaView style={styles.main}>
       <View style={styles.container}>
@@ -15,9 +41,9 @@ export default function Login() {
           </View>
 
           <Text style={styles.loginContinueTxt}>Login in to continue</Text>
-          <TextInput style={styles.input} placeholder="Email" />
-          <TextInput style={styles.input} placeholder="Password" />
-
+          <TextInput name="username" onChangeText={onChangeUser} value={username} style={styles.input} placeholder="Email" />
+          <TextInput name="password" onChangeText={onChangePass} value={password} style={styles.input} placeholder="Password" />
+          
           <View style={styles.loginBtnWrapper}>
             <LinearGradient
               colors={['#13552c', '#729642']}
@@ -26,7 +52,7 @@ export default function Login() {
               end={{y: 1.0, x: 0.0}}>
               {/******************** LOGIN BUTTON *********************/}
               <TouchableOpacity
-                onPress={() => navigation.navigate('Homescreen')}
+                onPress={() => {checkAuthentication(username, password, navigation)}}
                 activeOpacity={0.7}
                 style={styles.loginBtn}>
                 <Text style={styles.loginText}>Log In</Text>
