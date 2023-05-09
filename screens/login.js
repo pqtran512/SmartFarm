@@ -2,34 +2,17 @@ import * as React from 'react';
 import { Image, StyleSheet, Text, View,  TextInput, SafeAreaView, TouchableOpacity} from 'react-native';
 import {LinearGradient} from 'expo-linear-gradient';
 import {useNavigation} from '@react-navigation/native';
-
-function checkAuthentication(username, password, navigation) {
-  console.log(username)
-  console.log(password)
-
-  const [data, setdata] = React.useState({
-    usename: '',
-    password: ''
-  })
-
-  React.useEffect(() => {
-    fetch(`http://127.0.0.1:5000/get-user/${username}/${password}`, {
-      method: 'GET'
-    }) 
-    .then(response => response.json())
-    .then(user => {
-      setdata(user)
-    })
-  }, [])
-
-  console.log(data)
-  navigation.navigate('Homescreen')
-}
+import { useEffect } from 'react';
 
 export default function Login() {
   const navigation = useNavigation();
   const [username, onChangeUser] = React.useState('');
   const [password, onChangePass] = React.useState('');
+
+  const [data, setdata] = React.useState({
+    username: '',
+    password: ''
+  });
 
   return (
     <SafeAreaView style={styles.main}>
@@ -52,7 +35,26 @@ export default function Login() {
               end={{y: 1.0, x: 0.0}}>
               {/******************** LOGIN BUTTON *********************/}
               <TouchableOpacity
-                onPress={() => {checkAuthentication(username, password, navigation)}}
+                onPress={() => {
+                  console.log(username)
+                  console.log(password)
+                
+                  async function fetchData() {
+                    try {
+                      const res = await fetch("http://127.0.0.1:5000/get-user/mykhanh/1234");
+                      const data = await res.json();
+                      setdata(data);
+                    } catch (err) {
+                      console.log(err);
+                    }
+                  }
+
+                  useEffect(fetchData)
+                
+                  console.log(data)
+                  
+                  navigation.navigate('Homescreen')
+                }}
                 activeOpacity={0.7}
                 style={styles.loginBtn}>
                 <Text style={styles.loginText}>Log In</Text>
