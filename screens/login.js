@@ -2,17 +2,46 @@ import * as React from 'react';
 import { Image, StyleSheet, Text, View,  TextInput, SafeAreaView, TouchableOpacity} from 'react-native';
 import {LinearGradient} from 'expo-linear-gradient';
 import {useNavigation} from '@react-navigation/native';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from "../fireBaseConfig";
 
 export default function Login() {
   const navigation = useNavigation();
   const [username, onChangeUser] = React.useState('');
   const [password, onChangePass] = React.useState('');
 
+  // const [email, setEmail] = useState('');
+  // const [testPassword, setPassword] = React.useState('');
+
   const [data, setdata] = React.useState({
     username: '',
     password: ''
   });
+
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     try {
+  //       const res = await fetch("http://127.0.0.1:5000/get-user/mykhanh/1234");
+  //       const data = await res.json();
+  //       console.log(data);
+  //       setdata(data);
+  //     } catch (err) {
+  //       // console.log(err);
+  //     }
+  //   }
+  //   fetchData();
+  // });
+  function handleLogin(email, password) {
+    signInWithEmailAndPassword(auth, email, password)
+      .then(userCredentials => {
+        const user = userCredentials.user;
+        navigation.navigate('Homescreen');
+      })
+      .catch((e) => {
+        alert("Invalid user");
+      })
+  }
 
   return (
     <SafeAreaView style={styles.main}>
@@ -24,8 +53,8 @@ export default function Login() {
           </View>
 
           <Text style={styles.loginContinueTxt}>Login in to continue</Text>
-          <TextInput name="username" onChangeText={onChangeUser} value={username} style={styles.input} placeholder="Email" />
-          <TextInput name="password" onChangeText={onChangePass} value={password} style={styles.input} placeholder="Password" />
+          <TextInput name="username" onChangeText={text => {onChangeUser(text)}} value={username} style={styles.input} placeholder="Email" />
+          <TextInput name="password" onChangeText={text => {onChangePass(text)}} value={password} style={styles.input} placeholder="Password" />
           
           <View style={styles.loginBtnWrapper}>
             <LinearGradient
@@ -36,24 +65,7 @@ export default function Login() {
               {/******************** LOGIN BUTTON *********************/}
               <TouchableOpacity
                 onPress={() => {
-                  console.log(username)
-                  console.log(password)
-                
-                  async function fetchData() {
-                    try {
-                      const res = await fetch("http://127.0.0.1:5000/get-user/mykhanh/1234");
-                      const data = await res.json();
-                      setdata(data);
-                    } catch (err) {
-                      console.log(err);
-                    }
-                  }
-
-                  useEffect(fetchData)
-                
-                  console.log(data)
-                  
-                  navigation.navigate('Homescreen')
+                  handleLogin(username, password);
                 }}
                 activeOpacity={0.7}
                 style={styles.loginBtn}>
