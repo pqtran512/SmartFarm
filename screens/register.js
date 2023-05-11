@@ -4,8 +4,6 @@ import { Text, SafeAreaView, ScrollView, StyleSheet, View, TouchableOpacity, Key
 import Input from './input_register';
 import Button from './Button_register';
 import { useNavigation } from '@react-navigation/native';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../fireBaseConfig';
 
 export default function Register() { 
   const [inputs, setInputs] = React.useState({
@@ -42,22 +40,9 @@ export default function Register() {
       valid = false;
     }
     if (valid){
-      createUser(inputs.email, inputs.password);
       register();
     }
   };
-
-  function createUser(email, password){
-      createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredentials) => {
-          const user = userCredentials.user;
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          console.log(errorMessage, errorCode);
-        })
-  }
 
   const register = () => {navigation.navigate('Login')};
   const handleOnChange = (text, input) => {

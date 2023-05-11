@@ -1,69 +1,72 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TextInput} from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, TextInput, TouchableWithoutFeedback, Keyboard} from 'react-native';
 import { Octicons, Ionicons  } from '@expo/vector-icons';
 
 export default function BrightSet() {
-  const [interval_min, onChangeMin] = React.useState('');
-  const [interval_sec, onChangeSec] = React.useState('');
-  const [lower, onChangeMinTemp] = React.useState('');
-  const [upper, onChangeMaxTemp] = React.useState('');
+  const [min, onChangeMin] = React.useState('');
+  const [sec, onChangeSec] = React.useState('');
+  const [minTemp, onChangeMinTemp] = React.useState('');
+  const [maxTemp, onChangeMaxTemp] = React.useState('');
   
     return (
-      <View style={styles.main}>
-        <Text style={[styles.title, {marginTop: 16}]}>Automatic mode setting</Text>
-        <View style={styles.row}>
-          <Octicons name="stopwatch" size={24} color="gray" />
-          <Text>   Polling interval</Text>
-          <View style={styles.info}>
-            <TextInput
-              style={styles.input}
-              onChangeText={onChangeMin}
-              value={interval_min}
-              placeholder="00"
-              keyboardType="numeric"
-            />
-            <Text style={styles.unit}>min</Text>
-            <TextInput
-              style={styles.input}
-              onChangeText={onChangeSec}
-              value={interval_sec}
-              placeholder="00"
-              keyboardType="numeric"
-            />
-            <Text style={styles.unit}>sec</Text>
-          </View>
-          
-        </View>
-        <Text  style={styles.title}>Safety fallback mode</Text>
-        <View style={styles.row}>
-          <Ionicons name="warning-outline" size={20} color="black" />
-          <Text>  Lower brightness limit</Text>
-          <View style={styles.info}>
-            <TextInput
+
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View style={styles.main}>
+          <Text style={[styles.title, {marginTop: 16}]}>Automatic mode setting</Text>
+          <View style={styles.row}>
+            <Octicons name="stopwatch" size={24} color="gray" />
+            <Text>   Polling interval</Text>
+            <View style={styles.info}>
+              <TextInput
                 style={styles.input}
-                onChangeText={onChangeMinTemp}
-                value={lower}
-                placeholder="10"
+                onChangeText={onChangeMin}
+                value={min}
+                placeholder="00"
                 keyboardType="numeric"
               />
-            <Text style={styles.unit}> %</Text>
-          </View>
-        </View>
-        <View style={styles.row}>
-          <Ionicons name="warning-outline" size={20} color="black" />
-          <Text>  Upper brightness limit</Text>
-          <View style={styles.info}>
-            <TextInput
+              <Text style={styles.unit}>min</Text>
+              <TextInput
                 style={styles.input}
-                onChangeText={onChangeMaxTemp}
-                value={upper}
-                placeholder="30"
+                onChangeText={onChangeSec}
+                value={sec}
+                placeholder="00"
                 keyboardType="numeric"
               />
-            <Text style={styles.unit}> %</Text>
+              <Text style={styles.unit}>sec</Text>
+            </View>
+            
+          </View>
+          <Text  style={styles.title}>Safety fallback mode</Text>
+          <View style={styles.row}>
+            <Ionicons name="warning-outline" size={20} color="black" />
+            <Text>  Lower brightness limit</Text>
+            <View style={styles.info}>
+              <TextInput
+                  style={styles.input}
+                  onChangeText={onChangeMinTemp}
+                  value={minTemp}
+                  placeholder="10"
+                  keyboardType="numeric"
+                />
+              <Text style={styles.unit}> %</Text>
+            </View>
+          </View>
+          <View style={styles.row}>
+            <Ionicons name="warning-outline" size={20} color="black" />
+            <Text>  Upper brightness limit</Text>
+            <View style={styles.info}>
+              <TextInput
+                  style={styles.input}
+                  onChangeText={onChangeMaxTemp}
+                  value={maxTemp}
+                  placeholder="30"
+                  keyboardType="numeric"
+                />
+              <Text style={styles.unit}> %</Text>
+            </View>
           </View>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     );
   }
 
