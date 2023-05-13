@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, View, Dimensions, ScrollView } from 'react-native';
+import { StyleSheet, View, Dimensions, ScrollView, Switch } from 'react-native';
 import { NativeBaseProvider, Box, Stack, HStack, VStack, Image, Pressable, Center, Container, Heading, Text } from "native-base";
 import { LineChart } from 'react-native-chart-kit';
 import { ChartData } from 'react-native-chart-kit/dist/HelperTypes';
@@ -26,6 +26,58 @@ export function useInterval(callback, delay) {
       return () => clearInterval(id);
     }
   }, [delay]);
+}
+
+function PumpSwitch(){
+  const [isEnabled, setIsEnabled] = useState(false);
+  // const [text, setText] = useState('Press the button');
+
+  const toggleSwitch = () => {
+    if (isEnabled) {
+      // setText("Inactive");
+      fetch("https://io.adafruit.com/api/v2/webhooks/feed/DCFJ8CFBBUCkboeF91JbrvscTCGe", {
+        method: 'POST',
+        body: JSON.stringify({
+          value: 0
+        }),
+        headers: {
+          "Content-type": "application/json"
+        }
+      })
+      .then(res => res.json())
+      .then(json => console.log(json))
+      .catch(err => console.error(err))
+    } else {
+      // setText("Active");
+      fetch("https://io.adafruit.com/api/v2/webhooks/feed/DCFJ8CFBBUCkboeF91JbrvscTCGe", {
+        method: 'POST',
+        body: JSON.stringify({
+          value: 1
+        }),
+        headers: {
+          "Content-type": "application/json"
+        }
+      })
+      .then(res => res.json())
+      .then(json => console.log(json))
+      .catch(err => console.error(err))
+    }
+
+    setIsEnabled(previousState => !previousState);
+  }
+
+  return (
+    <Box>
+      {/* <Text>{text}</Text> */}
+      <Switch 
+        trackColor={{false: 'grey', true: 'rgb(26, 255, 146)'}}
+        thumbColor={isEnabled ? 'rgb(26, 255, 146)' : 'grey'}
+        ios_backgroundColor={'grey'}
+        onValueChange={toggleSwitch}
+        value={isEnabled}
+      />
+    </Box>
+  )
 }
 
 function LightChart(props) {
@@ -207,6 +259,17 @@ export default function Dashboard() {
         <NativeBaseProvider>
           <View>
             <Box alignItems={"center"} justifyContent={"space-between"}>
+              <Box rounded={"lg"} maxW={"300"} overflow={"hidden"} borderColor={"coolGray.200"} borderWidth={"1"} marginTop={"10px"} marginBottom={"10px"}>
+                
+                <Stack p="4" space={4}>
+                  <Stack space={3}>
+                    <HStack display={"flex"} justifyContent={'space-between'} width={"280"} alignItems={"center"} space={4}>
+                      <Heading size="md" ml="-1">Turn on irrigation:</Heading>
+                      <PumpSwitch/>
+                    </HStack>
+                  </Stack>
+                </Stack>
+              </Box>
               <Box rounded={"lg"} maxW={"300"} overflow={"hidden"} borderColor={"coolGray.200"} borderWidth={"1"} marginTop={"10px"} marginBottom={"10px"}>
                 <LightChart/> 
                 <Stack p="4" space={4}>
