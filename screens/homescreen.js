@@ -9,6 +9,7 @@ import {useNavigation} from '@react-navigation/native';
 import { doc, getDocs, collection, query, where } from "firebase/firestore"
 import { auth } from '../fireBaseConfig';
 import { db } from '../fireBaseConfig';
+import { useInterval } from './dashboard';
 
 const Stack = createNativeStackNavigator();
 var data = [
@@ -16,6 +17,64 @@ var data = [
   { label: 'Sunflower', value: '2' },
   { label: 'Guava Tree', value: '3' },
 ];
+
+function TemperatureValue(){
+  const [temp, setTemp] = useState(0);
+
+  async function fetchData(){
+    try {
+      const res = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-temperature");
+      const data = await res.json();
+      setTemp(data.last_value);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  useInterval(fetchData, 3000);
+
+  return (
+    <Text style={styles.cardinfo}>{temp} <Text style={styles.unit}>°C</Text></Text>
+  )
+}
+function HumidityValue(){
+  const [humid, setHumid] = useState(0);
+
+  async function fetchData(){
+    try {
+      const res = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-humidity");
+      const data = await res.json();
+      setHumid(data.last_value);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  useInterval(fetchData, 3000);
+
+  return (
+    <Text style={styles.cardinfo}>{humid} <Text style={styles.unit}>%</Text></Text>
+  )
+}
+function LightValue(){
+  const [light, setLight] = useState(0);
+
+  async function fetchData(){
+    try {
+      const res = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-lightlevel");
+      const data = await res.json();
+      setLight(data.last_value);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  useInterval(fetchData, 3000);
+
+  return (
+    <Text style={styles.cardinfo}>{light} <Text style={styles.unit}>lux</Text></Text>
+  )
+}
 
 export default function Homescreen() {
   const [fresh, setFresh] = useState(false);
@@ -160,7 +219,7 @@ export default function Homescreen() {
             <Image source={{uri:'https://cdn-icons-png.flaticon.com/512/1684/1684375.png'}} style={styles.cardicon}/>
             <View style={styles.column}>
               <Text style={styles.cardtitle}>Temperature</Text>
-              <Text style={styles.cardinfo}>27 <Text style={styles.unit}>°C</Text></Text>
+              <TemperatureValue></TemperatureValue>
             </View>
             <View style={styles.columnLeft}>
               <TouchableOpacity style={styles.settingIcon} onPress={() => navigation.navigate('Temperature Settings')} >
@@ -175,7 +234,7 @@ export default function Homescreen() {
             <Image source={{uri:'https://cdn-icons-png.flaticon.com/512/6566/6566344.png'}} style={styles.cardicon}/>
             <View style={styles.column}>
               <Text style={styles.cardtitle}>Humidity</Text>
-              <Text style={styles.cardinfo}>35 <Text style={styles.unit}>%</Text></Text>
+              <HumidityValue></HumidityValue>
             </View>
             <View style={styles.columnLeft}>
               <TouchableOpacity style={styles.settingIcon} onPress={() => navigation.navigate('Humidity Settings')} >
@@ -191,7 +250,7 @@ export default function Homescreen() {
             <Image source={{uri:'https://cdn-icons-png.flaticon.com/512/427/427735.png'}} style={styles.cardicon}/>
             <View style={styles.column}>
               <Text style={styles.cardtitle}>Brightness</Text>
-              <Text style={styles.cardinfo}>170 <Text style={styles.unit}>%</Text></Text>
+              <LightValue></LightValue>
             </View>
             <View style={styles.columnLeft}>
               <TouchableOpacity style={styles.settingIcon} onPress={() => navigation.navigate('Brightness Settings')} >
