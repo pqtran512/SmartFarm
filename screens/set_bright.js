@@ -18,7 +18,7 @@ export default function BrightSet() {
   const [bright, setBright] = useState([])
 
   useEffect(() => {
-    ; (async () => {
+    (async () => {
       if (!email) return false
       const docRef = doc(db, 'bright', email)
       const doc_snap = await getDoc(docRef)

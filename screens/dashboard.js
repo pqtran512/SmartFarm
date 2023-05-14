@@ -1,11 +1,10 @@
 import * as React from 'react';
 import { StyleSheet, View, Dimensions, ScrollView, Switch } from 'react-native';
-import { NativeBaseProvider, Box, Stack, HStack, VStack, Image, Pressable, Center, Container, Heading, Text } from "native-base";
+import { NativeBaseProvider, Box, Stack, HStack, VStack, Heading, Text } from "native-base";
 import { LineChart } from 'react-native-chart-kit';
-import { ChartData } from 'react-native-chart-kit/dist/HelperTypes';
 import { useEffect, useState, useRef } from 'react';
-import { Icon } from '@rneui/themed';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { auth, db } from '../fireBaseConfig';
+import { doc, getDoc } from 'firebase/firestore';
 // import { Card, Button, Icon } from '@rneui/base';
 
 export function useInterval(callback, delay) {
@@ -80,8 +79,13 @@ function PumpSwitch(){
   )
 }
 
-function LightChart(props) {
+function LightChart() {
+  const user = auth.currentUser;
+  const email = user.email;
+
   const [fetchedData, setData] = useState([0, 0, 0, 0, 0]);
+  const [time, setTime] = useState(3000);
+  
 
   const lightData = {
     datasets: [
@@ -96,6 +100,19 @@ function LightChart(props) {
     ]
   }
 
+  async function fetchTime(){
+    const docRef = doc(db, "bright", email);
+    const docSnap = await getDoc(docRef);
+
+    const data = docSnap.data();
+    const min = data["min"];
+    const sec = data["sec"];
+    const res = (min*60 + sec)*1000;
+    // console.log(res);
+    setTime(res);
+    // return Number((min * 60 + sec) * 1000);
+  }
+
   async function fetchData() {
     try {
       const res = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-lightlevel");
@@ -108,8 +125,8 @@ function LightChart(props) {
       console.log(error);
     }
   }
-
-  useInterval(fetchData, 3000);
+  fetchTime();
+  useInterval(fetchData, time);
 
   return (
       <View>
@@ -138,8 +155,12 @@ function LightChart(props) {
       </View>
   )
 }
-function HumidChart(props) {
+function HumidChart() {
+  const user = auth.currentUser;
+  const mail = user.email;
+
   const [fetchedData, setData] = useState([0, 0, 0, 0, 0]);
+  const [time, setTime] = useState(3000);
 
   const humidData = {
     datasets: [
@@ -154,6 +175,19 @@ function HumidChart(props) {
     ]
   }
 
+  async function fetchTime(){
+    const docRef = doc(db, "humid", mail);
+    const docSnap = await getDoc(docRef);
+
+    const data = docSnap.data();
+    const min = data["min"];
+    const sec = data["sec"];
+    const res = (min*60 + sec)*1000;
+    // console.log(res);
+    setTime(res);
+    // return Number((min * 60 + sec) * 1000);
+  }
+
   async function fetchData() {
     try {
       const res = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-humidity");
@@ -166,7 +200,9 @@ function HumidChart(props) {
       console.log(error);
     }
   }
-  useInterval(fetchData, 3000);
+
+  fetchTime();
+  useInterval(fetchData, time);
   
   return (
       <View>
@@ -196,7 +232,11 @@ function HumidChart(props) {
   )
 }
 function TempChart(props) {
+  const user = auth.currentUser;
+  const mail = user.email;
+
   const [fetchedData, setData] = useState([0, 0, 0, 0, 0]);
+  const [time, setTime] = useState(3000);
 
   const tempData = {
     datasets: [
@@ -211,6 +251,19 @@ function TempChart(props) {
     ]
   }
 
+  async function fetchTime(){
+    const docRef = doc(db, "temp", mail);
+    const docSnap = await getDoc(docRef);
+
+    const data = docSnap.data();
+    const min = data["min"];
+    const sec = data["sec"];
+    const res = (min*60 + sec)*1000;
+    // console.log(res);
+    setTime(res);
+    // return Number((min * 60 + sec) * 1000);
+  }
+
   async function fetchData() {
     try {
       const res = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-temperature");
@@ -223,7 +276,9 @@ function TempChart(props) {
       console.log(error);
     }
   }
-  useInterval(fetchData, 3000);
+
+  fetchTime();
+  useInterval(fetchData, time);
   
   return (
       <View>
