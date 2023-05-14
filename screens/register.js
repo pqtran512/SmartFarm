@@ -40,16 +40,16 @@ export default function Register() {
     if (!inputs.password) {
       handleError('Please input password', 'password');
       valid = false;
+    } else if (inputs.password.length < 5) {
+      handleError('Min password length of 5', 'password');
+      valid = false;
     }
     if (!inputs.tree_name) {
-      handleError('Please input your first tree name', 'tree name');
+      handleError('Please input your first tree name', 'tree_name');
       valid = false;
     } 
     if (!inputs.quantity) {
-      handleError('Please input your first tree quantity', 'tree quantity');
-      valid = false;
-    } else if (inputs.password.length < 5) {
-      handleError('Min password length of 5', 'password');
+      handleError('Please input your first tree quantity', 'quantity');
       valid = false;
     }
     if (valid){
