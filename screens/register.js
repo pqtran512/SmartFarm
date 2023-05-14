@@ -92,7 +92,7 @@ export default function Register() {
         quantity: quantity
       }
       
-      setDoc(doc(db, "fruit", email.toLowerCase()), data2);
+      setDoc(doc(db, "fruit", email.toLowerCase() + tree_name.toLowerCase()), data2);
       setDoc(doc(db, "temp", email.toLowerCase()), data);
       setDoc(doc(db, "humid", email.toLowerCase()), data1);
       setDoc(doc(db, "bright", email.toLowerCase()), data);  
