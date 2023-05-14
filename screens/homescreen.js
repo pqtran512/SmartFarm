@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Image, StyleSheet, Text, View, SafeAreaView, TouchableOpacity} from 'react-native';
+import { Image, StyleSheet, Text, View, SafeAreaView, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
 import { Ionicons, Fontisto, AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
 import { Dropdown } from 'react-native-element-dropdown';
@@ -8,7 +8,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {useNavigation} from '@react-navigation/native';
 import { doc, getDocs, collection, query, where } from "firebase/firestore"
 import { auth } from '../fireBaseConfig';
-import { db } from '../fireBaseConfig'
+import { db } from '../fireBaseConfig';
 
 const Stack = createNativeStackNavigator();
 var data = [
@@ -18,16 +18,32 @@ var data = [
 ];
 
 export default function Homescreen() {
+  const [fresh, setFresh] = useState(false);
   const navigation = useNavigation();
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
   const [currentDate, setCurrentDate] = useState('');
   const [fruits, setFruits] = useState('')
 
+  const [check, setCheck] = useState(0)
+
   const user = auth.currentUser;
   const email = user.email;
 
-  useEffect(async () => {
+  function handleChangeTree() {
+    navigation.navigate('Tree Settings')
+  }
+
+  const pullMe = () => {
+    setFresh(true)
+    setTimeout(() => {
+      setFresh(false)
+    }, 3000)
+    
+    setCheck(check + 1)
+  }
+
+  useEffect(() => {
     var date = new Date().getDate(); //Current Date
     var month = new Date().getMonth() + 1; //Current Month
     var year = new Date().getFullYear(); //Current Year
@@ -39,23 +55,22 @@ export default function Homescreen() {
       + ' ' + hours + ':' + min + ':' + sec
     );
 
-    const colRef = query(collection(db, 'fruit'), where("user_email", "==", email))
-    const doc_snap = await getDocs(colRef)
-    const docs = doc_snap.docs.map((doc) => {
-      const data = doc.data()
-      return data
-    })
+    async function fetchData() {
+      const colRef = query(collection(db, 'fruit'), where("user_email", "==", email))
+      const doc_snap = await getDocs(colRef)
+      const docs = doc_snap.docs.map((doc) => {
+        const data = doc.data()
+        return data
+      })
 
-    /*
-    const docs = doc_snap.docs.map(() => {
-      const data = doc.data()
-      return data
-    }) */
+      setFruits(docs)
+    }
+    fetchData()
 
-    setFruits(docs)
-    console.log("hello")
+    console.log("count")
+    console.log(check)
 
-  }, []);
+  }, [check]);
 
   console.log(fruits.length)
 
@@ -88,6 +103,14 @@ export default function Homescreen() {
   // const renderIcon = () => {}
   return (
     <SafeAreaView style={styles.container}>
+      <ScrollView
+        refreshControl={
+          <RefreshControl 
+            refreshing = {fresh}
+            onRefresh = {() => pullMe()}
+          />
+        }
+      >
       <View style={styles.summary}>
         <View style={[{justifyContent: 'center', alignItems: 'center', marginTop: 5}]}>
           {index == 1? iconSmile(): index == 2? iconNeutral(): iconSad()}
@@ -122,7 +145,7 @@ export default function Homescreen() {
                 />
             </View>
             <View style={styles.addtree}>
-              <TouchableOpacity style={styles.settingIcon} onPress={() => navigation.navigate('Tree Settings')} >
+              <TouchableOpacity style={styles.settingIcon} onPress={() => {handleChangeTree()}} >
                 <Ionicons name="add-circle" size={28} color="black" />
               </TouchableOpacity>
             </View>
@@ -179,7 +202,7 @@ export default function Homescreen() {
           </View>
         </View>
       </View>
-      
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -278,3 +301,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+

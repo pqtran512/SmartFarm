@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableWithoutFeedback, Keyboard, TouchableOpacity} from 'react-native';
 import { Octicons, Ionicons  } from '@expo/vector-icons';
 import { auth } from '../fireBaseConfig';
-import db from '../fireBaseConfig'
+import { db } from '../fireBaseConfig'
 import { doc, getDoc, updateDoc } from "firebase/firestore"
 import {LinearGradient} from 'expo-linear-gradient';
 
@@ -241,3 +241,4 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   }
 });
+

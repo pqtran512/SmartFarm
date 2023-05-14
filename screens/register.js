@@ -88,7 +88,7 @@ export default function Register() {
 
       const data2 = {
         user_email: email.toLowerCase(),
-        tree_name: tree_name,
+        tree_name: tree_name.toLowerCase(),
         quantity: quantity
       }
       

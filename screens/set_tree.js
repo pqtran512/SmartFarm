@@ -29,6 +29,7 @@ export default function TreeSet() {
     }, [])
 
     console.log(fruits)
+    
 
     function find_update(tree_name, quantity) {
         if (fruits.length != 0) {
@@ -49,7 +50,7 @@ export default function TreeSet() {
             quantity: quantity,
             user_email: email
         })
-
+        change_tree = true
         alert("Successfully!")
     }
 
@@ -139,4 +140,4 @@ SaveText: {
     color: 'white',
     fontSize: 20,
 },
-})
+});

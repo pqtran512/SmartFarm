@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TextInput, TouchableWithoutFeedback, Keyboard, 
 import { Octicons, Ionicons  } from '@expo/vector-icons';
 import { RadioButton } from 'react-native-paper';
 import { auth } from '../fireBaseConfig';
-import db from '../fireBaseConfig'
+import { db } from '../fireBaseConfig'
 import { doc, getDoc, updateDoc } from "firebase/firestore"
 import {LinearGradient} from 'expo-linear-gradient';
 
