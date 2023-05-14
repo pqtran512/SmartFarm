@@ -71,7 +71,7 @@ function PumpSwitch(){
       <Switch 
         trackColor={{false: 'grey', true: 'rgb(26, 255, 146)'}}
         thumbColor={isEnabled ? 'rgb(26, 255, 146)' : 'grey'}
-        ios_backgroundColor={'grey'}
+        ios_backgroundColor={'rgb(26, 255, 146)'}
         onValueChange={toggleSwitch}
         value={isEnabled}
       />

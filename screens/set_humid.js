@@ -1,11 +1,62 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableWithoutFeedback, Keyboard, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableWithoutFeedback, Keyboard, TouchableOpacity, Switch } from 'react-native';
+import { NativeBaseProvider, Box, HStack } from 'native-base';
 import { Octicons, Ionicons  } from '@expo/vector-icons';
 import { RadioButton } from 'react-native-paper';
 import { auth } from '../fireBaseConfig';
 import { db } from '../fireBaseConfig'
 import { doc, getDoc, updateDoc } from "firebase/firestore"
 import {LinearGradient} from 'expo-linear-gradient';
+import { useInterval } from './dashboard';
+
+function PumpSwitch(props){
+  const [isEnabled, setIsEnabled] = useState(false);
+  // const [text, setText] = useState('Press the button');
+
+  const toggleSwitch = () => {
+    if (isEnabled) {
+      // setText("Inactive");
+      fetch("https://io.adafruit.com/api/v2/webhooks/feed/DCFJ8CFBBUCkboeF91JbrvscTCGe", {
+        method: 'POST',
+        body: JSON.stringify({
+          value: 0
+        }),
+        headers: {
+          "Content-type": "application/json"
+        }
+      })
+      .catch(err => console.error(err))
+    } else {
+      // setText("Active");
+      fetch("https://io.adafruit.com/api/v2/webhooks/feed/DCFJ8CFBBUCkboeF91JbrvscTCGe", {
+        method: 'POST',
+        body: JSON.stringify({
+          value: 1
+        }),
+        headers: {
+          "Content-type": "application/json"
+        }
+      })
+      .catch(err => console.error(err))
+    }
+
+    setIsEnabled(previousState => !previousState);
+  }
+
+  return (
+    <Box>
+      {/* <Text>{text}</Text> */}
+      <Switch 
+        trackColor={{false: 'grey', true: 'rgb(26, 255, 146)'}}
+        thumbColor={isEnabled ? 'rgb(26, 255, 146)' : 'grey'}
+        ios_backgroundColor={'rgb(26, 255, 146)'}
+        onValueChange={toggleSwitch}
+        value={isEnabled}
+        disabled={!props.isManual}
+      />
+    </Box>
+  )
+}
 
 export default function HumidSet() {
   const [checked, setChecked] = React.useState('first');
@@ -14,6 +65,7 @@ export default function HumidSet() {
   const [sec, onChangeSec] = React.useState('');
   const [minTemp, onChangeMinTemp] = React.useState('');
   const [maxTemp, onChangeMaxTemp] = React.useState('');
+  const [manual, setManual] = React.useState(true);
 
   const user = auth.currentUser;
   const email = user.email;
@@ -82,115 +134,154 @@ export default function HumidSet() {
     })
   }
 
-    return (
+  async function autoPump(){
+    const humid_feed = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-humidity");
+    const data = await humid_feed.json();
+    let currentValue = data.last_value;
+    console.log("This is moi: ", moi);
+    if (currentValue >= Number(moi)){
+      const servo_feed = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/servo-test");
+      const data = await servo_feed.json();
+      let last_value = data.last_value;
+      console.log(last_value);
 
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View style={styles.main}>
-          <Text style={[styles.title, {marginTop: 16}]}>Moisture regulation mode</Text>
-          <View style={styles.row}>
-            <RadioButton
-            value="first"
-            status={ checked === 'first' ? 'checked' : 'unchecked' }
-            onPress={() => setChecked('first')}
-            />
-            <Text style={styles.option}> Manual</Text>
-          </View>
-          <View style={{flexDirection: 'row'}}>
-            <RadioButton
-              value="second"
-              status={ checked === 'second' ? 'checked' : 'unchecked' }
-              onPress={() => setChecked('second')}
-            />
-            <Text style={styles.option}> Automatic</Text>
-            <View style={styles.info}>
-              <Text style={styles.unit}>over </Text>
-              <TextInput
-                  style={[styles.input,{height: '70%'}]}
-                  onChangeText={onChangeMoi}
-                  value={moi}
-                  placeholder={tmpMoisture}
-                  keyboardType="numeric"
-                />
-              <Text style={styles.unit}>%</Text>
-            </View>
-          </View>
-          <Text style={styles.title}>Automatic mode setting</Text>
-          <View style={styles.row}>
-            <Octicons name="stopwatch" size={24} color="gray" />
-            <Text>   Polling interval</Text>
-            <View style={styles.info}>
-              <TextInput
-                style={styles.input}
-                onChangeText={onChangeMin}
-                value={min}
-                placeholder={tmpMin}
-                keyboardType="numeric"
-              />
-              <Text style={styles.unit}>min</Text>
-              <TextInput
-                style={styles.input}
-                onChangeText={onChangeSec}
-                value={sec}
-                placeholder={tmpSec}
-                keyboardType="numeric"
-              />
-              <Text style={styles.unit}>sec</Text>
-            </View>
-            
-          </View>
-          <Text style={styles.title}>Safety fallback mode</Text>
-          <View style={styles.row}>
-            <Ionicons name="warning-outline" size={20} color="black" />
-            <Text>  Lower humidity limit</Text>
-            <View style={styles.info}>
-              <TextInput
-                  style={styles.input}
-                  onChangeText={onChangeMinTemp}
-                  value={minTemp}
-                  placeholder={tmpLower}
-                  keyboardType="numeric"
-                />
-              <Text style={styles.unit}>%</Text>
-            </View>
-          </View>
-          <View style={styles.row}>
-            <Ionicons name="warning-outline" size={20} color="black" />
-            <Text>  Upper humidity limit</Text>
-            <View style={styles.info}>
-              <TextInput
-                  style={styles.input}
-                  onChangeText={onChangeMaxTemp}
-                  value={maxTemp}
-                  placeholder={tmpUpper}
-                  keyboardType="numeric"
-                />
-              <Text style={styles.unit}>%</Text>
-            </View>
-          </View>
-          <View style={styles.loginBtnWrapper}>
-            <LinearGradient
-              colors={['#13552c', '#729642']}
-              style={styles.linearGradient}
-              start={{y: 0.0, x: 0.0}}
-              end={{y: 1.0, x: 0.0}}>
-              {/******************** LOGIN BUTTON *********************/}
-              <TouchableOpacity
+      let interval = setInterval(() => {
+        fetch("https://io.adafruit.com/api/v2/webhooks/feed/DCFJ8CFBBUCkboeF91JbrvscTCGe", {
+          method: 'POST',
+          body: JSON.stringify({
+            value: last_value
+          }),
+          headers: {
+            "Content-type": "application/json"
+          }
+        });
+        if (last_value === 1) last_value = 0;
+        else last_value = 1;
+        // if (manual === true) clearInterval(interval);
+      }, 6000)
+    }
+  }
+
+    return (
+      <NativeBaseProvider>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+          <View style={styles.main}>
+            <Text style={[styles.title, {marginTop: 16}]}>Moisture regulation mode</Text>
+            <HStack style={styles.row} display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
+              <HStack>
+                <RadioButton
+                value="first"
+                status={ checked === 'first' ? 'checked' : 'unchecked' }
                 onPress={() => {
-                  if (moi != "") updateMoi(moi)
-                  if (min != "") updateMin(min)
-                  if (sec != "") updateSec(sec)
-                  if (minTemp != "") updateLower(minTemp)
-                  if (maxTemp != "") updateUpper(maxTemp)
-                  alert("Update successfully!")
+                  setChecked('first');
+                  setManual(true);
                 }}
-                activeOpacity={0.7}
-                style={styles.loginBtn}>
-                <Text style={styles.loginText}>Submit</Text>
-              </TouchableOpacity>
-            </LinearGradient>
+                />
+                <Text marginTop={5}> Manual</Text>
+              </HStack>
+              <PumpSwitch isManual={manual}></PumpSwitch>
+            </HStack>
+            <View style={{flexDirection: 'row'}}>
+              <RadioButton
+                value="second"
+                status={ checked === 'second' ? 'checked' : 'unchecked' }
+                onPress={() => {
+                  setChecked('second');
+                  setManual(false);
+                  autoPump();
+                }}
+              />
+              <Text style={styles.option}> Automatic</Text>
+              <View style={styles.info}>
+                <Text style={styles.unit}>over </Text>
+                <TextInput
+                    style={[styles.input,{height: '70%'}]}
+                    onChangeText={onChangeMoi}
+                    value={moi}
+                    placeholder={tmpMoisture}
+                    keyboardType="numeric"
+                  />
+                <Text style={styles.unit}>%</Text>
+              </View>
+            </View>
+            <Text style={styles.title}>Automatic mode setting</Text>
+            <View style={styles.row}>
+              <Octicons name="stopwatch" size={24} color="gray" />
+              <Text>   Polling interval</Text>
+              <View style={styles.info}>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={onChangeMin}
+                  value={min}
+                  placeholder={tmpMin}
+                  keyboardType="numeric"
+                />
+                <Text style={styles.unit}>min</Text>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={onChangeSec}
+                  value={sec}
+                  placeholder={tmpSec}
+                  keyboardType="numeric"
+                />
+                <Text style={styles.unit}>sec</Text>
+              </View>
+              
+            </View>
+            <Text style={styles.title}>Safety fallback mode</Text>
+            <View style={styles.row}>
+              <Ionicons name="warning-outline" size={20} color="black" />
+              <Text>  Lower humidity limit</Text>
+              <View style={styles.info}>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={onChangeMinTemp}
+                    value={minTemp}
+                    placeholder={tmpLower}
+                    keyboardType="numeric"
+                  />
+                <Text style={styles.unit}>%</Text>
+              </View>
+            </View>
+            <View style={styles.row}>
+              <Ionicons name="warning-outline" size={20} color="black" />
+              <Text>  Upper humidity limit</Text>
+              <View style={styles.info}>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={onChangeMaxTemp}
+                    value={maxTemp}
+                    placeholder={tmpUpper}
+                    keyboardType="numeric"
+                  />
+                <Text style={styles.unit}>%</Text>
+              </View>
+            </View>
+            <View style={styles.loginBtnWrapper}>
+              <LinearGradient
+                colors={['#13552c', '#729642']}
+                style={styles.linearGradient}
+                start={{y: 0.0, x: 0.0}}
+                end={{y: 1.0, x: 0.0}}>
+                {/******************** LOGIN BUTTON *********************/}
+                <TouchableOpacity
+                  onPress={() => {
+                    if (moi != "") updateMoi(moi)
+                    if (min != "") updateMin(min)
+                    if (sec != "") updateSec(sec)
+                    if (minTemp != "") updateLower(minTemp)
+                    if (maxTemp != "") updateUpper(maxTemp)
+                    alert("Update successfully!")
+                  }}
+                  activeOpacity={0.7}
+                  style={styles.loginBtn}>
+                  <Text style={styles.loginText}>Submit</Text>
+                </TouchableOpacity>
+              </LinearGradient>
+            </View>
           </View>
-        </View>
-      </TouchableWithoutFeedback>
+        </TouchableWithoutFeedback>
+      </NativeBaseProvider>
     );
   }
 

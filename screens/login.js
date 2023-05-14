@@ -27,8 +27,26 @@ export default function Login() {
         navigation.navigate('Homescreen');
       })
       .catch((e) => {
-        alert("Invalid user");
+        handleLoginError(e);
       })
+  };
+
+  function handleLoginError(err) {
+    if (err.code === "auth/invalid-email") {
+      alert("Please enter a valid email address");
+    }
+    else if (err.code === "auth/missing-password") {
+      alert("Please enter your password");
+    }
+    else if (err.code === "auth/invalid-password") {
+      alert("Please enter a valid password");
+    }
+    else if (err.code === "auth/user-not-found") {
+      alert ("User not found, please sign up");
+    }
+    else if (err.code === "auth/wrong-password") {
+      alert("Wrong password");
+    }
   }
 
   return (

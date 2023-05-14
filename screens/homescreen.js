@@ -20,13 +20,19 @@ var data = [
 ];
 
 function TempTime() {
-  const [temp, setTemp] = useState(0);
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
 
   async function fetchData(){
     try {
       const res = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-temperature");
       const data = await res.json();
-      setTemp(data.updated_at);
+      const str = data.updated_at;
+      const array = str.split('T');
+      const final_time = array[1].slice(0, -1);
+
+      setDate(array[0]);
+      setTime(final_time);
     } catch (err) {
       console.log(err);
     }
@@ -35,18 +41,24 @@ function TempTime() {
   useInterval(fetchData, 3000);
 
   return (
-    <Text style={styles.cardtext}>{temp}</Text>
+    <Text style={styles.cardtext}>{date} {time}</Text>
   )
 }
 
 function HumidTime() {
-  const [humid, setHumid] = useState(0);
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
 
   async function fetchData() {
     try {
       const res = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-humidity");
       const data = await res.json();
-      setHumid(data.updated_at);
+      const str = data.updated_at;
+      const array = str.split('T');
+      const final_time = array[1].slice(0, -1);
+
+      setDate(array[0]);
+      setTime(final_time);
     } catch (err) {
       console.log(err);
     }
@@ -55,18 +67,24 @@ function HumidTime() {
   useInterval(fetchData, 3000);
 
   return (
-    <Text style={styles.cardtext}>{humid}</Text>
+    <Text style={styles.cardtext}>{date} {time}</Text>
   )
 }
 
 function BrightTime() {
-  const [light, setLight] = useState(0);
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
 
   async function fetchData(){
     try {
       const res = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-lightlevel");
       const data = await res.json();
-      setLight(data.updated_at);
+      const str = data.updated_at;
+      const array = str.split('T');
+      const final_time = array[1].slice(0, -1);
+      
+      setDate(array[0]);
+      setTime(final_time);
     } catch (err) {
       console.log(err);
     }
@@ -75,7 +93,7 @@ function BrightTime() {
   useInterval(fetchData, 3000);
 
   return (
-    <Text style={styles.cardtext}>{light}</Text>
+    <Text style={styles.cardtext}>{date} {time}</Text>
   )
 }
 
