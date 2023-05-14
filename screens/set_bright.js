@@ -110,7 +110,7 @@ export default function BrightSet() {
                   placeholder={tmpLower}
                   keyboardType="numeric"
                 />
-              <Text style={styles.unit}> %</Text>
+              <Text style={styles.unit}> lux</Text>
             </View>
           </View>
           <View style={styles.row}>
@@ -124,7 +124,7 @@ export default function BrightSet() {
                   placeholder={tmpUpper}
                   keyboardType="numeric"
                 />
-              <Text style={styles.unit}> %</Text>
+              <Text style={styles.unit}> lux</Text>
             </View>
           </View>
           <View style={styles.loginBtnWrapper}>
