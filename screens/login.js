@@ -2,36 +2,24 @@ import * as React from 'react';
 import { Image, StyleSheet, Text, View,  TextInput, SafeAreaView, TouchableOpacity} from 'react-native';
 import {LinearGradient} from 'expo-linear-gradient';
 import {useNavigation} from '@react-navigation/native';
-import { useEffect, useState } from 'react';
+import Input from './input';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from "../fireBaseConfig";
 
 export default function Login() {
-  const navigation = useNavigation();
-  const [username, onChangeUser] = React.useState('');
-  const [password, onChangePass] = React.useState('');
-
-  // const [email, setEmail] = useState('');
-  // const [testPassword, setPassword] = React.useState('');
-
-  const [data, setdata] = React.useState({
-    username: '',
-    password: ''
+  const [inputs, setInputs] = React.useState({
+    email: '',
+    password: '',
   });
+  const navigation = useNavigation();
+  const [errors, setErrors] = React.useState({});
+  const handleOnChange = (text, input) => {
+    setInputs(prevState => ({...prevState, [input]: text}));
+  };
+  const handleError = (errorMessage, input) => {
+    setErrors(prevState => ({...prevState, [input]: errorMessage}));
+  };
 
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     try {
-  //       const res = await fetch("http://127.0.0.1:5000/get-user/mykhanh/1234");
-  //       const data = await res.json();
-  //       console.log(data);
-  //       setdata(data);
-  //     } catch (err) {
-  //       // console.log(err);
-  //     }
-  //   }
-  //   fetchData();
-  // });
   function handleLogin(email, password) {
     signInWithEmailAndPassword(auth, email, password)
       .then(userCredentials => {
@@ -53,9 +41,29 @@ export default function Login() {
           </View>
 
           <Text style={styles.loginContinueTxt}>Login in to continue</Text>
-          <TextInput name="username" onChangeText={text => {onChangeUser(text)}} value={username} style={styles.input} placeholder="Email" />
-          <TextInput name="password" onChangeText={text => {onChangePass(text)}} value={password} style={styles.input} placeholder="Password" />
-          
+          <Input
+              placeholder="Enter your email" 
+              iconName="email-outline"
+              label="Email" 
+              error={errors.email}
+              onFocus={() => {
+                handleError(null, 'email');
+              }}
+              value={inputs.email}
+              onChangeText={text => handleOnChange(text, 'email')}
+            />
+          <Input
+            placeholder="Enter your password"
+            iconName="lock-outline"
+            label="Password"
+            onFocus={() => {
+              handleError(null, 'password');
+            }}
+            value={inputs.password}
+            onChangeText={text => handleOnChange(text, 'password')} 
+            password
+          /> 
+
           <View style={styles.loginBtnWrapper}>
             <LinearGradient
               colors={['#13552c', '#729642']}
@@ -65,7 +73,7 @@ export default function Login() {
               {/******************** LOGIN BUTTON *********************/}
               <TouchableOpacity
                 onPress={() => {
-                  handleLogin(username, password);
+                  handleLogin(inputs.email, inputs.password);
                 }}
                 activeOpacity={0.7}
                 style={styles.loginBtn}>
@@ -105,7 +113,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
+    padding: 15,
   },
   container: {
     padding: 15,
@@ -129,16 +137,17 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     fontWeight: 'bold',
   },
-  input: {
-    borderWidth: 1,
-    borderColor: 'white',
-    padding: 15,
-    marginVertical: 10,
-    borderRadius: 5,
-    height: 55,
-    paddingVertical: 0,
-    backgroundColor: 'white',
-  },
+  // input: {
+  //   borderWidth: 1,
+  //   borderColor: 'white',
+  //   padding: 15,
+  //   marginVertical: 10,
+  //   borderRadius: 5,
+  //   height: 55,
+  //   paddingVertical: 0,
+  //   backgroundColor: 'white',
+  //   paddingLeft: 25,
+  // },
   // Login Btn Styles
   loginBtnWrapper: {
     height: 55,

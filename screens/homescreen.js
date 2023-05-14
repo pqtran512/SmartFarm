@@ -1,6 +1,4 @@
-import * as React from 'react';
-import { useState, useEffect, useRef } from 'react';
-import { useInterval } from './dashboard';
+import React, {useState, useEffect} from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Image, StyleSheet, Text, View, SafeAreaView, TouchableOpacity} from 'react-native';
 import { Ionicons, Fontisto, AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -8,78 +6,28 @@ import { NavigationContainer } from '@react-navigation/native';
 import { Dropdown } from 'react-native-element-dropdown';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {useNavigation} from '@react-navigation/native';
+import { doc, getDocs, collection, query, where } from "firebase/firestore"
+import { auth } from '../fireBaseConfig';
+import { db } from '../fireBaseConfig'
 
 const Stack = createNativeStackNavigator();
-const data = [
+var data = [
   { label: 'Mango Tree', value: '1' },
   { label: 'Sunflower', value: '2' },
   { label: 'Guava Tree', value: '3' },
 ];
-
-function TemperatureValue(){
-  const [temp, setTemp] = useState(0);
-
-  async function fetchData(){
-    try {
-      const res = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-temperature");
-      const data = await res.json();
-      setTemp(data.last_value);
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  useInterval(fetchData, 3000);
-
-  return (
-    <Text style={styles.cardinfo}>{temp} <Text style={styles.unit}>°C</Text></Text>
-  )
-}
-function HumidityValue(){
-  const [humid, setHumid] = useState(0);
-
-  async function fetchData(){
-    try {
-      const res = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-humidity");
-      const data = await res.json();
-      setHumid(data.last_value);
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  useInterval(fetchData, 3000);
-
-  return (
-    <Text style={styles.cardinfo}>{humid} <Text style={styles.unit}>%</Text></Text>
-  )
-}
-function LightValue(){
-  const [light, setLight] = useState(0);
-
-  async function fetchData(){
-    try {
-      const res = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-lightlevel");
-      const data = await res.json();
-      setLight(data.last_value);
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  useInterval(fetchData, 3000);
-
-  return (
-    <Text style={styles.cardinfo}>{light} <Text style={styles.unit}>lux</Text></Text>
-  )
-}
 
 export default function Homescreen() {
   const navigation = useNavigation();
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
   const [currentDate, setCurrentDate] = useState('');
-  useEffect(() => {
+  const [fruits, setFruits] = useState('')
+
+  const user = auth.currentUser;
+  const email = user.email;
+
+  useEffect(async () => {
     var date = new Date().getDate(); //Current Date
     var month = new Date().getMonth() + 1; //Current Month
     var year = new Date().getFullYear(); //Current Year
@@ -90,7 +38,31 @@ export default function Homescreen() {
       date + '/' + month + '/' + year 
       + ' ' + hours + ':' + min + ':' + sec
     );
+
+    const colRef = query(collection(db, 'fruit'), where("user_email", "==", email))
+    const doc_snap = await getDocs(colRef)
+    const docs = doc_snap.docs.map((doc) => {
+      const data = doc.data()
+      return data
+    })
+
+    /*
+    const docs = doc_snap.docs.map(() => {
+      const data = doc.data()
+      return data
+    }) */
+
+    setFruits(docs)
+    console.log("hello")
+
   }, []);
+
+  console.log(fruits.length)
+
+  if (fruits.length != 0) {
+    data = fruits
+  }
+
   const [index, setIndex] = useState(1);
   const iconSmile = () => {
     return (
@@ -136,9 +108,9 @@ export default function Homescreen() {
                   inputSearchStyle={styles.d_inputSearchStyle}
                   data={data}
                   maxHeight={200}
-                  labelField="label"
-                  valueField="value"
-                  placeholder={data[0].label}
+                  labelField="tree_name"
+                  valueField="quantity"
+                  placeholder={data[0].tree_name}
                   searchPlaceholder="Search..."
                   value={value}
                   onFocus={() => setIsFocus(true)}
@@ -148,6 +120,11 @@ export default function Homescreen() {
                     setIsFocus(false);
                   }}
                 />
+            </View>
+            <View style={styles.addtree}>
+              <TouchableOpacity style={styles.settingIcon} onPress={() => navigation.navigate('Tree Settings')} >
+                <Ionicons name="add-circle" size={28} color="black" />
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -160,8 +137,7 @@ export default function Homescreen() {
             <Image source={{uri:'https://cdn-icons-png.flaticon.com/512/1684/1684375.png'}} style={styles.cardicon}/>
             <View style={styles.column}>
               <Text style={styles.cardtitle}>Temperature</Text>
-              {/* <Text style={styles.cardinfo}>27 <Text style={styles.unit}>°C</Text></Text> */}
-              <TemperatureValue></TemperatureValue>
+              <Text style={styles.cardinfo}>27 <Text style={styles.unit}>°C</Text></Text>
             </View>
             <View style={styles.columnLeft}>
               <TouchableOpacity style={styles.settingIcon} onPress={() => navigation.navigate('Temperature Settings')} >
@@ -176,8 +152,7 @@ export default function Homescreen() {
             <Image source={{uri:'https://cdn-icons-png.flaticon.com/512/6566/6566344.png'}} style={styles.cardicon}/>
             <View style={styles.column}>
               <Text style={styles.cardtitle}>Humidity</Text>
-              {/* <Text style={styles.cardinfo}>35 <Text style={styles.unit}>ml/m³</Text></Text> */}
-              <HumidityValue></HumidityValue>
+              <Text style={styles.cardinfo}>35 <Text style={styles.unit}>%</Text></Text>
             </View>
             <View style={styles.columnLeft}>
               <TouchableOpacity style={styles.settingIcon} onPress={() => navigation.navigate('Humidity Settings')} >
@@ -193,8 +168,7 @@ export default function Homescreen() {
             <Image source={{uri:'https://cdn-icons-png.flaticon.com/512/427/427735.png'}} style={styles.cardicon}/>
             <View style={styles.column}>
               <Text style={styles.cardtitle}>Brightness</Text>
-              {/* <Text style={styles.cardinfo}>170 <Text style={styles.unit}>W/m²</Text></Text> */}
-              <LightValue></LightValue>
+              <Text style={styles.cardinfo}>170 <Text style={styles.unit}>%</Text></Text>
             </View>
             <View style={styles.columnLeft}>
               <TouchableOpacity style={styles.settingIcon} onPress={() => navigation.navigate('Brightness Settings')} >
@@ -205,6 +179,7 @@ export default function Homescreen() {
           </View>
         </View>
       </View>
+      
     </SafeAreaView>
   );
 }
@@ -255,6 +230,13 @@ const styles = StyleSheet.create({
     margin: 10,
     marginLeft:5,
   },
+  addtree: {
+    marginTop:40,
+    marginLeft: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 100,
+  },
   cardtitle: {
     fontSize: 14,
   },
@@ -276,6 +258,7 @@ const styles = StyleSheet.create({
   settingIcon: {
     marginLeft: 'auto',
     // marginTop: 20,
+  },
   dropdown: {
     height: 45,
     fontSize: 17,
@@ -294,4 +277,4 @@ const styles = StyleSheet.create({
   d_selectedTextStyle: {
     fontSize: 16,
   },
-}});
+});

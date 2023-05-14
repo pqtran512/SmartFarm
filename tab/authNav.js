@@ -7,7 +7,7 @@ import BottomTabNavigator from './bottomTab';
 import TempSet from '../screens/set_temp';
 import HumidSet from '../screens/set_humid';
 import BrightSet from '../screens/set_bright';
-
+import TreeSet from '../screens/set_tree';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 const Stack = createNativeStackNavigator();
 
@@ -26,6 +26,7 @@ export default function AuthNav() {
             <Stack.Screen name={'Temperature Settings'} component={TempSet} />
             <Stack.Screen name={'Humidity Settings'} component={HumidSet} />
             <Stack.Screen name={'Brightness Settings'} component={BrightSet} />
+            <Stack.Screen name={'Tree Settings'} component={TreeSet} />
         </Stack.Navigator>
     );
 }

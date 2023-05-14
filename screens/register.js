@@ -1,11 +1,12 @@
 //import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as React from 'react';
 import { Text, SafeAreaView, ScrollView, StyleSheet, View, TouchableOpacity, Keyboard } from 'react-native';
-import Input from './input_register';
+import Input from './input';
 import Button from './Button_register';
 import { useNavigation } from '@react-navigation/native';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../fireBaseConfig';
+import { auth, db } from '../fireBaseConfig';
+import { doc, setDoc, collection, addDoc } from "firebase/firestore";
 
 export default function Register() { 
   const [inputs, setInputs] = React.useState({
@@ -13,6 +14,8 @@ export default function Register() {
     fullname: '',
     phone: '',
     password: '',
+    tree_name: '',
+    quantity: '',
   });
   const [errors, setErrors] = React.useState({});
   const navigation = useNavigation();
@@ -37,17 +40,25 @@ export default function Register() {
     if (!inputs.password) {
       handleError('Please input password', 'password');
       valid = false;
+    }
+    if (!inputs.tree_name) {
+      handleError('Please input your first tree name', 'tree name');
+      valid = false;
+    } 
+    if (!inputs.quantity) {
+      handleError('Please input your first tree quantity', 'tree quantity');
+      valid = false;
     } else if (inputs.password.length < 5) {
       handleError('Min password length of 5', 'password');
       valid = false;
     }
     if (valid){
-      createUser(inputs.email, inputs.password);
+      createUser(inputs.email, inputs.password, inputs.tree_name, inputs.quantity);
       register();
     }
   };
 
-  function createUser(email, password){
+  function createUser(email, password, tree_name, quantity) {
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredentials) => {
           const user = userCredentials.user;
@@ -57,6 +68,34 @@ export default function Register() {
           const errorMessage = error.message;
           console.log(errorMessage, errorCode);
         })
+      
+      const data = {
+        user_email: email.toLowerCase(),
+        upper: 40,
+        lower: 15,
+        min: 5,
+        sec: 0
+      };
+
+      const data1 = {
+        user_email: email.toLowerCase(),
+        moisture: 40,
+        upper: 40,
+        lower: 15,
+        min: 5,
+        sec: 0
+      };
+
+      const data2 = {
+        user_email: email.toLowerCase(),
+        tree_name: tree_name,
+        quantity: quantity
+      }
+      
+      setDoc(doc(db, "fruit", email.toLowerCase()), data2);
+      setDoc(doc(db, "temp", email.toLowerCase()), data);
+      setDoc(doc(db, "humid", email.toLowerCase()), data1);
+      setDoc(doc(db, "bright", email.toLowerCase()), data);  
   }
 
   const register = () => {navigation.navigate('Login')};
@@ -121,6 +160,26 @@ export default function Register() {
               }}
               onChangeText={text => handleOnChange(text, 'password')} 
               password
+            />
+            <Input
+              placeholder="Enter your first tree" 
+              iconName="account-outline" 
+              label="TreeName" 
+              error={errors.tree_name}
+              onFocus={() => {
+                handleError(null, 'tree_name');
+              }}
+              onChangeText={text => handleOnChange(text, 'tree_name')}
+            />
+            <Input
+              placeholder="Enter your tree quantity" 
+              iconName="account-outline" 
+              label="TreeQuantity" 
+              error={errors.quantity}
+              onFocus={() => {
+                handleError(null, 'quantity');
+              }}
+              onChangeText={text => handleOnChange(text, 'quantity')}
             />
           <Button title="Register" onPress={validate}/>
           <View 
