@@ -6,19 +6,80 @@ import { NavigationContainer } from '@react-navigation/native';
 import { Dropdown } from 'react-native-element-dropdown';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {useNavigation} from '@react-navigation/native';
-import { doc, getDocs, collection, query, where } from "firebase/firestore"
+import { doc, getDocs, collection, query, where, getDoc } from "firebase/firestore"
 import { auth } from '../fireBaseConfig';
 import { db } from '../fireBaseConfig';
 import { useInterval } from './dashboard';
 
 const Stack = createNativeStackNavigator();
+
 var data = [
   { label: 'Mango Tree', value: '1' },
   { label: 'Sunflower', value: '2' },
   { label: 'Guava Tree', value: '3' },
 ];
 
-function TemperatureValue(){
+function TempTime() {
+  const [temp, setTemp] = useState(0);
+
+  async function fetchData(){
+    try {
+      const res = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-temperature");
+      const data = await res.json();
+      setTemp(data.updated_at);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  useInterval(fetchData, 3000);
+
+  return (
+    <Text style={styles.cardtext}>{temp}</Text>
+  )
+}
+
+function HumidTime() {
+  const [humid, setHumid] = useState(0);
+
+  async function fetchData() {
+    try {
+      const res = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-humidity");
+      const data = await res.json();
+      setHumid(data.updated_at);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  useInterval(fetchData, 3000);
+
+  return (
+    <Text style={styles.cardtext}>{humid}</Text>
+  )
+}
+
+function BrightTime() {
+  const [light, setLight] = useState(0);
+
+  async function fetchData(){
+    try {
+      const res = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-lightlevel");
+      const data = await res.json();
+      setLight(data.updated_at);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  useInterval(fetchData, 3000);
+
+  return (
+    <Text style={styles.cardtext}>{light}</Text>
+  )
+}
+
+function TemperatureValue() {
   const [temp, setTemp] = useState(0);
 
   async function fetchData(){
@@ -37,10 +98,10 @@ function TemperatureValue(){
     <Text style={styles.cardinfo}>{temp} <Text style={styles.unit}>°C</Text></Text>
   )
 }
-function HumidityValue(){
+function HumidityValue() {
   const [humid, setHumid] = useState(0);
 
-  async function fetchData(){
+  async function fetchData() {
     try {
       const res = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-humidity");
       const data = await res.json();
@@ -56,7 +117,7 @@ function HumidityValue(){
     <Text style={styles.cardinfo}>{humid} <Text style={styles.unit}>%</Text></Text>
   )
 }
-function LightValue(){
+function LightValue() {
   const [light, setLight] = useState(0);
 
   async function fetchData(){
@@ -82,9 +143,13 @@ export default function Homescreen() {
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
   const [currentDate, setCurrentDate] = useState('');
-  const [fruits, setFruits] = useState('')
+  const [fruits, setFruits] = useState('');
 
-  const [check, setCheck] = useState(0)
+  const [temp, setTemp] = useState('');
+  const [humid, setHumid] = useState('');
+  const [bright, setBright] = useState('');
+
+  const [check, setCheck] = useState(0);
 
   const user = auth.currentUser;
   const email = user.email;
@@ -124,20 +189,145 @@ export default function Homescreen() {
 
       setFruits(docs)
     }
-    fetchData()
 
-    console.log("count")
-    console.log(check)
+    async function fetchTemp() {
+      if (!email) return false
+      const docRef = doc(db, 'temp', email)
+      const doc_snap = await getDoc(docRef)
+
+      data = doc_snap.data()
+      setTemp(data)
+    }
+
+    async function fetchHumid() {
+      if (!email) return false
+      const docRef = doc(db, 'humid', email)
+      const doc_snap = await getDoc(docRef)
+
+      data = doc_snap.data()
+      setHumid(data)
+    }
+
+    async function fetchBright() {
+      if (!email) return false
+      const docRef = doc(db, 'bright', email)
+      const doc_snap = await getDoc(docRef)
+
+      data = doc_snap.data()
+      setBright(data)
+    }
+    
+    fetchData()
+    fetchTemp()
+    fetchHumid()
+    fetchBright()
 
   }, [check]);
 
-  console.log(fruits.length)
+  console.log(humid)
+  console.log(bright)
 
   if (fruits.length != 0) {
     data = fruits
   }
 
-  const [index, setIndex] = useState(1);
+  var temp_upper;
+  var temp_lower;
+  var bright_upper;
+  var bright_lower;
+  var humid_upper;
+  var humid_lower;
+  var idx = 0;
+
+  if (temp != "") {
+    temp_upper = temp.upper
+    temp_lower = temp.lower
+  }
+
+  if (humid != "") {
+    humid_upper = humid.upper
+    humid_lower = humid.lower
+  }
+
+  if (bright != "") {
+    bright_upper = bright.upper
+    bright_lower = bright.lower
+  }
+
+  function handleIcon(temp_lower, temp_upper, bright_lower, bright_upper, humid_lower, humid_upper, idx) {
+    const [temp, setTemp] = useState(0);
+
+    async function fetchData0(){
+      try {
+        const res = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-temperature");
+        const data = await res.json();
+        setTemp(data.last_value);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    const [humid, setHumid] = useState(0);
+
+    async function fetchData1() {
+      try {
+        const res = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-humidity");
+        const data = await res.json();
+        setHumid(data.last_value);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    const [light, setLight] = useState(0);
+
+    async function fetchData2(){
+      try {
+        const res = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-lightlevel");
+        const data = await res.json();
+        setLight(data.last_value);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    useInterval(fetchData2, 3000);
+    useInterval(fetchData0, 3000);
+    useInterval(fetchData1, 3000);
+
+    /*
+    if (temp >= temp_lower && temp <= temp_upper) {
+      idx = idx + 1;
+      console.log("index: here1")
+      console.log(idx)
+    }
+    if (humid >= humid_lower && humid <= humid_upper) {
+      idx = idx + 1;
+      console.log("index: here2")
+      console.log(humid)
+    }
+    if (light >= bright_lower && light <= bright_upper) {
+      idx = idx + 1;
+      console.log("index: here3")
+      console.log(idx)
+    }
+    console.log(humid, light, temp) */
+
+    if (humid != 0 && light != 0 && temp != 0) {
+      if (temp >= parseInt(temp_lower) && temp <= parseInt(temp_upper)) {
+        idx = idx + 1;
+      }
+      if (humid >= parseInt(humid_lower) && humid <= parseInt(humid_upper)) {
+        idx = idx + 1;
+      }
+      if (light >= parseInt(bright_lower) && light <= parseInt(bright_upper)) {
+        idx = idx + 1;
+      }
+      console.log(idx)
+      return idx == 3? iconSmile(): idx == 2? iconNeutral(): iconSad()
+    } 
+  }
+
   const iconSmile = () => {
     return (
       <View>
@@ -172,7 +362,7 @@ export default function Homescreen() {
       >
       <View style={styles.summary}>
         <View style={[{justifyContent: 'center', alignItems: 'center', marginTop: 5}]}>
-          {index == 1? iconSmile(): index == 2? iconNeutral(): iconSad()}
+          {handleIcon(temp_lower, temp_upper, bright_lower, bright_upper, humid_lower, humid_upper, idx)}
         </View>
           {/* emoji-happy, emoji-sad */}
         <View style={{marginTop:25, marginLeft:50}}>
@@ -225,7 +415,7 @@ export default function Homescreen() {
               <TouchableOpacity style={styles.settingIcon} onPress={() => navigation.navigate('Temperature Settings')} >
                 <Ionicons name="settings" size={23} color="#BBBBBB" />
               </TouchableOpacity>
-              <Text style={styles.cardtext}>11:18 30/03/2023</Text>
+              <TempTime></TempTime>
             </View>
           </View>
         </View>
@@ -240,8 +430,8 @@ export default function Homescreen() {
               <TouchableOpacity style={styles.settingIcon} onPress={() => navigation.navigate('Humidity Settings')} >
                 <Ionicons name="settings" size={23} color="#BBBBBB" />
               </TouchableOpacity>
-              <Text style={[styles.cardtext, {color: '#2c94fa', marginLeft:'auto', fontWeight: 'bold'}]}>above 30%</Text>
-              <Text style={styles.cardtext}>11:20 30/03/2023</Text>
+              <Text style={[styles.cardtext, {color: '#2c94fa', marginLeft:'auto', fontWeight: 'bold'}]}>above {humid_lower}%</Text>
+              <HumidTime></HumidTime>
             </View>
           </View>
         </View>
@@ -256,7 +446,7 @@ export default function Homescreen() {
               <TouchableOpacity style={styles.settingIcon} onPress={() => navigation.navigate('Brightness Settings')} >
                 <Ionicons name="settings" size={23} color="#BBBBBB" />
               </TouchableOpacity>
-              <Text style={styles.cardtext}>11:19 30/03/2023</Text>
+              <BrightTime></BrightTime>
             </View>
           </View>
         </View>
