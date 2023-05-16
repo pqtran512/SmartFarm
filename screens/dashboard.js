@@ -314,7 +314,7 @@ export default function Dashboard() {
         <NativeBaseProvider>
           <View>
             <Box alignItems={"center"} justifyContent={"space-between"}>
-              <Box rounded={"lg"} maxW={"300"} overflow={"hidden"} borderColor={"coolGray.200"} borderWidth={"1"} marginTop={"10px"} marginBottom={"10px"}>
+              {/* <Box rounded={"lg"} maxW={"300"} overflow={"hidden"} borderColor={"coolGray.200"} borderWidth={"1"} marginTop={"10px"} marginBottom={"10px"}>
                 
                 <Stack p="4" space={4}>
                   <Stack space={3}>
@@ -324,7 +324,7 @@ export default function Dashboard() {
                     </HStack>
                   </Stack>
                 </Stack>
-              </Box>
+              </Box> */}
               <Box rounded={"lg"} maxW={"300"} overflow={"hidden"} borderColor={"coolGray.200"} borderWidth={"1"} marginTop={"10px"} marginBottom={"10px"}>
                 <LightChart/> 
                 <Stack p="4" space={4}>

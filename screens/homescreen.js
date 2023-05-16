@@ -20,8 +20,25 @@ var data = [
 ];
 
 function TempTime() {
+  const user = auth.currentUser;
+  const email = user.email;
+
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
+  const [interval, setInterval] = useState(3000);
+
+  async function fetchTime(){
+    const docRef = doc(db, "temp", email);
+    const docSnap = await getDoc(docRef);
+
+    const data = docSnap.data();
+    const min = data["min"];
+    const sec = data["sec"];
+    const res = (min*60 + sec)*1000;
+    // console.log(res);
+    setInterval(res);
+    // return Number((min * 60 + sec) * 1000);
+  }
 
   async function fetchData(){
     try {
@@ -38,6 +55,7 @@ function TempTime() {
     }
   }
 
+  // fetchTime();
   useInterval(fetchData, 3000);
 
   return (
@@ -46,8 +64,25 @@ function TempTime() {
 }
 
 function HumidTime() {
+  const user = auth.currentUser;
+  const email = user.email;
+  
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
+  const [interval, setInterval] = useState(3000);
+
+  async function fetchTime(){
+    const docRef = doc(db, "humid", email);
+    const docSnap = await getDoc(docRef);
+
+    const data = docSnap.data();
+    const min = data["min"];
+    const sec = data["sec"];
+    const res = (min*60 + sec)*1000;
+    // console.log(res);
+    setInterval(res);
+    // return Number((min * 60 + sec) * 1000);
+  }
 
   async function fetchData() {
     try {
@@ -64,6 +99,7 @@ function HumidTime() {
     }
   }
 
+  // fetchTime();
   useInterval(fetchData, 3000);
 
   return (
@@ -72,8 +108,25 @@ function HumidTime() {
 }
 
 function BrightTime() {
+  const user = auth.currentUser;
+  const email = user.email;
+
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
+  const [interval, setInterval] = useState(3000);
+
+  async function fetchTime(){
+    const docRef = doc(db, "bright", email);
+    const docSnap = await getDoc(docRef);
+
+    const data = docSnap.data();
+    const min = data["min"];
+    const sec = data["sec"];
+    const res = (min*60 + sec)*1000;
+    // console.log(res);
+    setInterval(res);
+    // return Number((min * 60 + sec) * 1000);
+  }
 
   async function fetchData(){
     try {
@@ -90,6 +143,7 @@ function BrightTime() {
     }
   }
 
+  // fetchTime();
   useInterval(fetchData, 3000);
 
   return (
@@ -98,7 +152,24 @@ function BrightTime() {
 }
 
 function TemperatureValue() {
+  const user = auth.currentUser;
+  const email = user.email;
+
+  const [time, setTime] = useState(3000);
   const [temp, setTemp] = useState(0);
+
+  async function fetchTime(){
+    const docRef = doc(db, "temp", email);
+    const docSnap = await getDoc(docRef);
+
+    const data = docSnap.data();
+    const min = data["min"];
+    const sec = data["sec"];
+    const res = (min*60 + sec)*1000;
+    // console.log(res);
+    setTime(res);
+    // return Number((min * 60 + sec) * 1000);
+  }
 
   async function fetchData(){
     try {
@@ -110,6 +181,7 @@ function TemperatureValue() {
     }
   }
 
+  // fetchTime();
   useInterval(fetchData, 3000);
 
   return (
@@ -117,6 +189,10 @@ function TemperatureValue() {
   )
 }
 function HumidityValue() {
+  const user = auth.currentUser;
+  const email = user.email;
+
+  const [time, setTime] = useState(3000);
   const [humid, setHumid] = useState(0);
 
   async function fetchData() {
@@ -129,6 +205,20 @@ function HumidityValue() {
     }
   }
 
+  async function fetchTime(){
+    const docRef = doc(db, "humid", email);
+    const docSnap = await getDoc(docRef);
+
+    const data = docSnap.data();
+    const min = data["min"];
+    const sec = data["sec"];
+    const res = (min*60 + sec)*1000;
+    // console.log(res);
+    setTime(res);
+    // return Number((min * 60 + sec) * 1000);
+  }
+
+  // fetchTime();
   useInterval(fetchData, 3000);
 
   return (
@@ -136,7 +226,24 @@ function HumidityValue() {
   )
 }
 function LightValue() {
+  const user = auth.currentUser;
+  const email = user.email;
+
   const [light, setLight] = useState(0);
+  const [time, setTime] = useState(3000);
+
+  async function fetchTime(){
+    const docRef = doc(db, "bright", email);
+    const docSnap = await getDoc(docRef);
+
+    const data = docSnap.data();
+    const min = data["min"];
+    const sec = data["sec"];
+    const res = (min*60 + sec)*1000;
+    // console.log(res);
+    setTime(res);
+    // return Number((min * 60 + sec) * 1000);
+  }
 
   async function fetchData(){
     try {
@@ -148,6 +255,7 @@ function LightValue() {
     }
   }
 
+  // fetchTime();
   useInterval(fetchData, 3000);
 
   return (

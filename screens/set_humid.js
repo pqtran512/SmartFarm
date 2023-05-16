@@ -81,7 +81,7 @@ export default function HumidSet() {
       data = doc_snap.data()
       setHumids(data)
     })()
-  }, [])
+  }, [moi])
 
   console.log(humids)
 
@@ -138,12 +138,11 @@ export default function HumidSet() {
     const humid_feed = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-humidity");
     const data = await humid_feed.json();
     let currentValue = data.last_value;
-    console.log("This is moi: ", moi);
-    if (currentValue >= Number(moi)){
+    console.log("This is moi: ", humids.moisture);
+    if (currentValue >= Number(humids.moisture)){
       const servo_feed = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/servo-test");
       const data = await servo_feed.json();
       let last_value = data.last_value;
-      console.log(last_value);
 
       let interval = setInterval(() => {
         fetch("https://io.adafruit.com/api/v2/webhooks/feed/DCFJ8CFBBUCkboeF91JbrvscTCGe", {
@@ -157,8 +156,8 @@ export default function HumidSet() {
         });
         if (last_value === 1) last_value = 0;
         else last_value = 1;
-        // if (manual === true) clearInterval(interval);
-      }, 6000)
+        if (manual === true) clearInterval(interval);
+      }, 4000)
     }
   }
 
