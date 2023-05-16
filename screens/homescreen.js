@@ -71,19 +71,6 @@ function HumidTime() {
   const [time, setTime] = useState("");
   const [interval, setInterval] = useState(3000);
 
-  async function fetchTime(){
-    const docRef = doc(db, "humid", email);
-    const docSnap = await getDoc(docRef);
-
-    const data = docSnap.data();
-    const min = data["min"];
-    const sec = data["sec"];
-    const res = (min*60 + sec)*1000;
-    // console.log(res);
-    setInterval(res);
-    // return Number((min * 60 + sec) * 1000);
-  }
-
   async function fetchData() {
     try {
       const res = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-humidity");
@@ -115,19 +102,6 @@ function BrightTime() {
   const [time, setTime] = useState("");
   const [interval, setInterval] = useState(3000);
 
-  async function fetchTime(){
-    const docRef = doc(db, "bright", email);
-    const docSnap = await getDoc(docRef);
-
-    const data = docSnap.data();
-    const min = data["min"];
-    const sec = data["sec"];
-    const res = (min*60 + sec)*1000;
-    // console.log(res);
-    setInterval(res);
-    // return Number((min * 60 + sec) * 1000);
-  }
-
   async function fetchData(){
     try {
       const res = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-lightlevel");
@@ -158,7 +132,7 @@ function TemperatureValue() {
   const [time, setTime] = useState(3000);
   const [temp, setTemp] = useState(0);
 
-  async function fetchTime(){
+  async function fetchData() {
     const docRef = doc(db, "temp", email);
     const docSnap = await getDoc(docRef);
 
@@ -166,12 +140,9 @@ function TemperatureValue() {
     const min = data["min"];
     const sec = data["sec"];
     const res = (min*60 + sec)*1000;
-    // console.log(res);
+    
     setTime(res);
-    // return Number((min * 60 + sec) * 1000);
-  }
 
-  async function fetchData(){
     try {
       const res = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-temperature");
       const data = await res.json();
@@ -179,10 +150,11 @@ function TemperatureValue() {
     } catch (err) {
       console.log(err);
     }
+
+    //console.log("hello temp")
   }
 
-  // fetchTime();
-  useInterval(fetchData, 3000);
+  useInterval(fetchData, time);
 
   return (
     <Text style={styles.cardinfo}>{temp} <Text style={styles.unit}>°C</Text></Text>
@@ -196,16 +168,6 @@ function HumidityValue() {
   const [humid, setHumid] = useState(0);
 
   async function fetchData() {
-    try {
-      const res = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-humidity");
-      const data = await res.json();
-      setHumid(data.last_value);
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  async function fetchTime(){
     const docRef = doc(db, "humid", email);
     const docSnap = await getDoc(docRef);
 
@@ -215,11 +177,20 @@ function HumidityValue() {
     const res = (min*60 + sec)*1000;
     // console.log(res);
     setTime(res);
-    // return Number((min * 60 + sec) * 1000);
+
+    try {
+      const res = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-humidity");
+      const data = await res.json();
+      setHumid(data.last_value);
+    } catch (err) {
+      console.log(err);
+    }
+
+    //console.log("hello humid")
   }
 
   // fetchTime();
-  useInterval(fetchData, 3000);
+  useInterval(fetchData, time);
 
   return (
     <Text style={styles.cardinfo}>{humid} <Text style={styles.unit}>%</Text></Text>
@@ -232,7 +203,7 @@ function LightValue() {
   const [light, setLight] = useState(0);
   const [time, setTime] = useState(3000);
 
-  async function fetchTime(){
+  async function fetchData(){
     const docRef = doc(db, "bright", email);
     const docSnap = await getDoc(docRef);
 
@@ -242,10 +213,7 @@ function LightValue() {
     const res = (min*60 + sec)*1000;
     // console.log(res);
     setTime(res);
-    // return Number((min * 60 + sec) * 1000);
-  }
 
-  async function fetchData(){
     try {
       const res = await fetch("https://io.adafruit.com/api/v2/nquochuy137/feeds/yolofarm-lightlevel");
       const data = await res.json();
@@ -253,10 +221,12 @@ function LightValue() {
     } catch (err) {
       console.log(err);
     }
+
+    //console.log(light)
   }
 
   // fetchTime();
-  useInterval(fetchData, 3000);
+  useInterval(fetchData, time);
 
   return (
     <Text style={styles.cardinfo}>{light} <Text style={styles.unit}>lux</Text></Text>
@@ -350,9 +320,6 @@ export default function Homescreen() {
 
   }, [check]);
 
-  console.log(humid)
-  console.log(bright)
-
   if (fruits.length != 0) {
     data = fruits
   }
@@ -421,24 +388,6 @@ export default function Homescreen() {
     useInterval(fetchData0, 3000);
     useInterval(fetchData1, 3000);
 
-    /*
-    if (temp >= temp_lower && temp <= temp_upper) {
-      idx = idx + 1;
-      console.log("index: here1")
-      console.log(idx)
-    }
-    if (humid >= humid_lower && humid <= humid_upper) {
-      idx = idx + 1;
-      console.log("index: here2")
-      console.log(humid)
-    }
-    if (light >= bright_lower && light <= bright_upper) {
-      idx = idx + 1;
-      console.log("index: here3")
-      console.log(idx)
-    }
-    console.log(humid, light, temp) */
-
     if (humid != 0 && light != 0 && temp != 0) {
       if (temp >= parseInt(temp_lower) && temp <= parseInt(temp_upper)) {
         idx = idx + 1;
@@ -449,7 +398,7 @@ export default function Homescreen() {
       if (light >= parseInt(bright_lower) && light <= parseInt(bright_upper)) {
         idx = idx + 1;
       }
-      console.log(idx)
+
       return idx == 3? iconSmile(): idx == 2? iconNeutral(): iconSad()
     } 
   }

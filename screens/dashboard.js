@@ -120,6 +120,11 @@ function LightChart() {
       const temp = [...fetchedData];
       temp.push(data.last_value);
       setData(temp);
+      ////////
+      const curRef = doc(db, 'current', email)
+      updateDoc(curRef, {
+        bright: data.last_value
+      })
 
     } catch (error) {
       console.log(error);
@@ -196,6 +201,11 @@ function HumidChart() {
       temp.push(data.last_value);
       setData(temp);
 
+      const curRef = doc(db, 'current', mail)
+      updateDoc(curRef, {
+        humid: data.last_value
+      })
+
     } catch (error) {
       console.log(error);
     }
@@ -271,6 +281,11 @@ function TempChart(props) {
       const temp = [...fetchedData];
       temp.push(data.last_value);
       setData(temp);
+
+      const curRef = doc(db, 'current', mail)
+      updateDoc(curRef, {
+        temp: data.last_value
+      })
 
     } catch (error) {
       console.log(error);

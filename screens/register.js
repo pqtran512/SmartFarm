@@ -95,7 +95,8 @@ export default function Register() {
       setDoc(doc(db, "fruit", email.toLowerCase() + tree_name.toLowerCase()), data2);
       setDoc(doc(db, "temp", email.toLowerCase()), data);
       setDoc(doc(db, "humid", email.toLowerCase()), data1);
-      setDoc(doc(db, "bright", email.toLowerCase()), data);  
+      setDoc(doc(db, "bright", email.toLowerCase()), data); 
+       
   }
 
   const register = () => {navigation.navigate('Login')};
