@@ -146,7 +146,7 @@ function LightChart() {
               backgroundGradientFromOpacity: 0,
               backgroundGradientTo: "#A4BE7B",
               backgroundGradientToOpacity: 0.5,
-              color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
               strokeWidth: 2, // optional, default 3
               barPercentage: 0.5,
               useShadowColorFromDataset: false
@@ -222,7 +222,7 @@ function HumidChart() {
             backgroundGradientFromOpacity: 0,
             backgroundGradientTo: "#A4BE7B",
             backgroundGradientToOpacity: 0.5,
-            color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
             strokeWidth: 2, // optional, default 3
             barPercentage: 0.5,
             useShadowColorFromDataset: false
@@ -298,7 +298,7 @@ function TempChart(props) {
             backgroundGradientFromOpacity: 0,
             backgroundGradientTo: "#A4BE7B",
             backgroundGradientToOpacity: 0.5,
-            color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
             strokeWidth: 2, // optional, default 3
             barPercentage: 0.5,
             useShadowColorFromDataset: false
@@ -338,7 +338,7 @@ export default function Dashboard() {
                       Recorded from light sensor
                     </Text>
                   </Stack>
-                  <Text fontWeight="400">
+                  <Text fontWeight="400" style={{textAlign: 'justify'}}>
                   Light is needed for photosynthesis and the right light levels for plants needs to be studied as it differs considerably from plant to plant. Light is needed for plants to conduct a chemical process that turns it into sugars using light, water and carbon dioxide. 
                   </Text>
                 </Stack>
@@ -359,8 +359,8 @@ export default function Dashboard() {
                       Recorded from DHT20
                     </Text>
                   </Stack>
-                  <Text fontWeight="400">
-                  Tomato plants can tolerate a wide range of humidity levels, but for optimum fruit quality humidity levels should not fluctuate greatly in a short amount of time. 
+                  <Text fontWeight="400" style={{textAlign: 'justify'}}>
+                  Plants can tolerate a wide range of humidity levels, but for optimum fruit quality humidity levels should not fluctuate greatly in a short amount of time. 
                   </Text>
                 </Stack>
               </Box>
@@ -380,7 +380,7 @@ export default function Dashboard() {
                       Recorded from DHT20
                     </Text>
                   </Stack>
-                  <Text fontWeight="400">
+                  <Text fontWeight="400" style={{textAlign: 'justify'}}>
                   Weather has a significant impact on the prevalence of pests and diseases, the availability of water, and the amount of fertilizer needed to grow crops. Farmers rely on climate patterns and weather forecasting in agriculture to determine which crops to cultivate and when to sow them. 
                   </Text>
                 </Stack>

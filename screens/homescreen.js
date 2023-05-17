@@ -413,7 +413,7 @@ export default function Homescreen() {
   const iconNeutral = () => {
     return (
       <View>
-        <MaterialCommunityIcons name="emoticon-neutral" size={100} color="#b2df00" style={styles.icon} />
+        <MaterialCommunityIcons name="emoticon-neutral" size={100} color="#edda09" style={styles.icon} />
       </View>
     );
   }
